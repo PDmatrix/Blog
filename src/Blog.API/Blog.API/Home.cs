@@ -8,6 +8,7 @@ namespace Blog.API
 {
 	[ApiController]
 	[Route("api/[controller]")]
+	[ApiVersion("1.0")]
 	public class Home : ControllerBase
 	{
 		private readonly IMediator _mediator;

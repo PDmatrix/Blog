@@ -12,9 +12,8 @@ namespace Blog.API.Persistence
 		{
 			// Correct mapping of entities with underscores, e.g created_at with CreatedAt
 			Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-			
+
 			_connection = connection;
-			_connection.Open();
 		}
 		
 		public UnitOfWorkFactory(string connectionString)
@@ -23,7 +22,8 @@ namespace Blog.API.Persistence
 		
 		public IUnitOfWork Create()
 		{
-			return new UnitOfWork(_connection);
+            _connection.Open();
+            return new UnitOfWork(_connection);
 		}
 	}
 }

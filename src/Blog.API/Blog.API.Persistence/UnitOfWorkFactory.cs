@@ -7,7 +7,7 @@ namespace Blog.API.Persistence
 	public class UnitOfWorkFactory : IUnitOfWorkFactory
 	{
 		private readonly IDbConnection _connection;
-
+		
 		private UnitOfWorkFactory(IDbConnection connection)
 		{
 			// Correct mapping of entities with underscores, e.g created_at with CreatedAt
@@ -22,7 +22,9 @@ namespace Blog.API.Persistence
 		
 		public IUnitOfWork Create()
 		{
-            _connection.Open();
+			if((_connection.State & ConnectionState.Open) == 0)
+				_connection.Open();
+			
             return new UnitOfWork(_connection);
 		}
 	}

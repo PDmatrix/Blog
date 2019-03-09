@@ -27,7 +27,7 @@ namespace Blog.API.Features
 		[HttpGet]
 		[ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<PostDto>>> GetAll([FromQuery] int page = 1)
+        public async Task<ActionResult<IEnumerable<PostDto>>> GetAll(int page = 1)
 		{
 			if (page < 1)
 				page = 1;
@@ -40,7 +40,7 @@ namespace Blog.API.Features
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PostDto>> GetById([FromRoute] int id)
+        public async Task<ActionResult<PostDto>> GetById(int id)
         {
 	        var res = await _mediator.Send(new GetPost {Id = id});
 	        if (res == null)
@@ -53,13 +53,32 @@ namespace Blog.API.Features
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult> Add([FromBody] AddPost addPost)
+        public async Task<ActionResult> Add(AddPostCommand addPostCommand)
         {
-	        var postDto = await _mediator.Send(addPost);
+	        var createdPost = await _mediator.Send(addPostCommand);
 	        return CreatedAtAction(
 		        nameof(GetById), 
-		        new {id = postDto.Id}, 
-		        postDto);
+		        new {id = createdPost.Id}, 
+		        createdPost);
+        }
+        
+        [HttpDelete("{id}")]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> Delete(int id)
+        {
+	        await _mediator.Send(new DeletePost {Id = id});
+	        return NoContent();
+        }
+        
+        [HttpPut("{id}")]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> Update(int id, InputPostDto inputPostDto)
+        {
+	        await _mediator.Send(new UpdatePost {Id = id, Content = inputPostDto.Content});
+	        return NoContent();
         }
 	}
 }

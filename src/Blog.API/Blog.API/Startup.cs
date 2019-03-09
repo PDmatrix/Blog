@@ -2,6 +2,7 @@
 using Blog.API.Application.Posts.Commands;
 using Blog.API.Application.Posts.Models;
 using Blog.API.Application.Posts.Queries;
+using Blog.API.Infrastructure;
 using Blog.API.Persistence;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -35,7 +36,10 @@ namespace Blog.API
 			});
 			services.AddVersionedApiExplorer(options => { options.GroupNameFormat = "VV"; });
 			
-			services.AddMvcCore()
+			services.AddMvcCore(opt =>
+				{
+					opt.Filters.Add(typeof(TransactionFilter));
+				})
 				.AddCors()
 				.AddJsonFormatters()
 				.AddFluentValidation(x =>

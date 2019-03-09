@@ -1,6 +1,9 @@
 ﻿using Blog.API.Application.Interfaces;
+using Blog.API.Application.Posts.Commands;
+using Blog.API.Application.Posts.Models;
 using Blog.API.Application.Posts.Queries;
 using Blog.API.Persistence;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,10 +34,15 @@ namespace Blog.API
 				options.DefaultApiVersion = new ApiVersion(1, 0);
 			});
 			services.AddVersionedApiExplorer(options => { options.GroupNameFormat = "VV"; });
-
+			
 			services.AddMvcCore()
 				.AddCors()
 				.AddJsonFormatters()
+				.AddFluentValidation(x =>
+				{
+					x.RegisterValidatorsFromAssemblyContaining(typeof(AddPostValidator));
+					x.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
+				})
 				.AddJsonOptions(x =>
 				{
 					x.SerializerSettings.ContractResolver = new DefaultContractResolver

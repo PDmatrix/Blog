@@ -35,7 +35,7 @@ namespace Blog.API.Persistence
 
 		public void Rollback()
 		{
-			_transaction.Rollback();
+			_transaction?.Rollback();
 			Dispose();
 		}
 

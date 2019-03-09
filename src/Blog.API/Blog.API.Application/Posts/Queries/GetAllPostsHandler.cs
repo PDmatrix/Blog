@@ -9,8 +9,13 @@ using MediatR;
 
 namespace Blog.API.Application.Posts.Queries
 {
+	public class GetAllPosts : IRequest<IEnumerable<PostDto>>
+	{
+		public int Page { get; set; } = 1;
+	}
+	
 	// ReSharper disable once UnusedMember.Global
-	public class GetAllPostsHandler : IRequestHandler<GetAllPosts, IEnumerable<GetAllPostsDto>>
+	public class GetAllPostsHandler : IRequestHandler<GetAllPosts, IEnumerable<PostDto>>
 	{
 		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 		public GetAllPostsHandler(IUnitOfWorkFactory unitOfWorkFactory)
@@ -18,7 +23,7 @@ namespace Blog.API.Application.Posts.Queries
 			_unitOfWorkFactory = unitOfWorkFactory;
 		}
 		
-		public async Task<IEnumerable<GetAllPostsDto>> Handle(GetAllPosts request, CancellationToken ct)
+		public async Task<IEnumerable<PostDto>> Handle(GetAllPosts request, CancellationToken ct)
 		{
 			using (var unitOfWork = _unitOfWorkFactory.Create())
 			{
@@ -29,7 +34,7 @@ namespace Blog.API.Application.Posts.Queries
 					";
 				const int pageSize = 10;
 				object sqlParam = new {pageSize, page = (request.Page - 1) * pageSize };
-				return (await unitOfWork.Connection.QueryAsync<GetAllPostsDto>(sql, sqlParam, unitOfWork.Transaction)).ToList();
+				return (await unitOfWork.Connection.QueryAsync<PostDto>(sql, sqlParam, unitOfWork.Transaction)).ToList();
 			}
 		}
 	}

@@ -25,8 +25,11 @@ namespace Blog.API.Application.Posts.Queries
 				const string sql =
 					@"
 					SELECT id, content FROM post
+					LIMIT @pageSize OFFSET @page
 					";
-				return (await unitOfWork.Connection.QueryAsync<GetAllPostsDto>(sql, transaction: unitOfWork.Transaction)).ToList();
+				const int pageSize = 10;
+				object sqlParam = new {pageSize, page = (request.Page - 1) * pageSize };
+				return (await unitOfWork.Connection.QueryAsync<GetAllPostsDto>(sql, sqlParam, unitOfWork.Transaction)).ToList();
 			}
 		}
 	}

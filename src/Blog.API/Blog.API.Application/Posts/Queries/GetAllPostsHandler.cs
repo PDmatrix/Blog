@@ -24,9 +24,9 @@ namespace Blog.API.Application.Posts.Queries
 			{
 				const string sql =
 					@"
-					SELECT * FROM post
+					SELECT id, content FROM post
 					";
-				return (await unitOfWork.Connection.QueryAsync<GetAllPostsDto>(sql)).ToList();
+				return (await unitOfWork.Connection.QueryAsync<GetAllPostsDto>(sql, transaction: unitOfWork.Transaction)).ToList();
 			}
 		}
 	}

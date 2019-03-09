@@ -2,6 +2,7 @@ namespace Blog.API.Application.Posts.Models
 {
 	public class GetAllPostsDto
 	{
-		public string Name { get; set; }
+		public int Id { get; set; }
+		public string Content { get; set; }
 	}
 }

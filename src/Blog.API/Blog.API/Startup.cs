@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 
+[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 namespace Blog.API
 {
 	public class Startup
@@ -27,6 +28,7 @@ namespace Blog.API
 			{
 				options.AssumeDefaultVersionWhenUnspecified = true;
 				options.ApiVersionReader = new UrlSegmentApiVersionReader();
+				options.DefaultApiVersion = new ApiVersion(1, 0);
 			});
 			services.AddVersionedApiExplorer(options => { options.GroupNameFormat = "VV"; });
 

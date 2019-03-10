@@ -44,7 +44,7 @@ namespace Blog.API
 				.AddJsonFormatters()
 				.AddFluentValidation(x =>
 				{
-					x.RegisterValidatorsFromAssemblyContaining(typeof(AddPostValidator));
+					x.RegisterValidatorsFromAssemblyContaining<Startup>();
 					x.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
 				})
 				.AddJsonOptions(x =>

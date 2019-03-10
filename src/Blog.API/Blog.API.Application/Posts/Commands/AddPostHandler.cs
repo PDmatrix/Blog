@@ -7,9 +7,9 @@ using MediatR;
 
 namespace Blog.API.Application.Posts.Commands
 {
-	public class AddPostCommand : InputPostDto, IRequest<PostDto>
+	public class AddPostCommand : IRequest<PostDto>
 	{
-		
+		public string Content { get; set; }
 	}
 	
 	// ReSharper disable once UnusedMember.Global

@@ -6,20 +6,20 @@ using Blog.API.Application.Posts.Commands;
 using Blog.API.Application.Posts.Models;
 using Blog.API.Application.Posts.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Blog.API.Features
+namespace Blog.API.Features.Post
 {
 	[ApiController]
 	[Produces("application/json")]
 	[Consumes("application/json")]
 	[Route("api/[controller]")]
-	public class Post : ControllerBase
+	public class PostController : ControllerBase
 	{
 		private readonly IMediator _mediator;
 		
-		public Post(IMediator mediator)
+		public PostController(IMediator mediator)
 		{
 			_mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 		}
@@ -32,7 +32,7 @@ namespace Blog.API.Features
 			if (page < 1)
 				page = 1;
 			
-			var res = await _mediator.Send(new GetAllPosts {Page = page});
+			var res = await _mediator.Send(new GetAllPostsQuery {Page = page});
 			return res.ToList();
 		}
         
@@ -42,7 +42,7 @@ namespace Blog.API.Features
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PostDto>> GetById(int id)
         {
-	        var res = await _mediator.Send(new GetPost {Id = id});
+	        var res = await _mediator.Send(new GetPostQuery {Id = id});
 	        if (res == null)
 		        return NotFound();
 	        
@@ -53,9 +53,10 @@ namespace Blog.API.Features
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult> Add(AddPostCommand addPostCommand)
+        public async Task<ActionResult> Add(PostRequest postRequest)
         {
-	        var createdPost = await _mediator.Send(addPostCommand);
+	        var createdPost = await _mediator.Send(
+		        new AddPostCommand {Content = postRequest.Content});
 	        return CreatedAtAction(
 		        nameof(GetById), 
 		        new {id = createdPost.Id}, 
@@ -67,7 +68,7 @@ namespace Blog.API.Features
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult> Delete(int id)
         {
-	        await _mediator.Send(new DeletePost {Id = id});
+	        await _mediator.Send(new DeletePostCommand {Id = id});
 	        return NoContent();
         }
         
@@ -75,9 +76,10 @@ namespace Blog.API.Features
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> Update(int id, InputPostDto inputPostDto)
+        public async Task<ActionResult> Update(int id, PostRequest postRequest)
         {
-	        await _mediator.Send(new UpdatePost {Id = id, Content = inputPostDto.Content});
+	        await _mediator.Send(
+		        new UpdatePostCommand {Id = id, Content = postRequest.Content});
 	        return NoContent();
         }
 	}

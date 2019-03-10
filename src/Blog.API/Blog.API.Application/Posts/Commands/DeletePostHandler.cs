@@ -6,13 +6,13 @@ using MediatR;
 
 namespace Blog.API.Application.Posts.Commands
 {
-	public class DeletePost : IRequest
+	public class DeletePostCommand : IRequest
 	{
 		public int Id { get; set; }
 	}
 	
 	// ReSharper disable once UnusedMember.Global
-	public class DeletePostHandler : AsyncRequestHandler<DeletePost>
+	public class DeletePostHandler : AsyncRequestHandler<DeletePostCommand>
 	{
 		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 
@@ -21,7 +21,7 @@ namespace Blog.API.Application.Posts.Commands
 			_unitOfWorkFactory = unitOfWorkFactory;
 		}
 
-		protected override async Task Handle(DeletePost request, CancellationToken cancellationToken)
+		protected override async Task Handle(DeletePostCommand request, CancellationToken cancellationToken)
 		{
 			using (var unitOfWork = _unitOfWorkFactory.Create())
 			{

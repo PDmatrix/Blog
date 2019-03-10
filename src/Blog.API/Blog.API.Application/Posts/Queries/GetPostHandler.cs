@@ -8,13 +8,13 @@ using MediatR;
 
 namespace Blog.API.Application.Posts.Queries
 {
-	public class GetPost : IRequest<PostDto>
+	public class GetPostQuery : IRequest<PostDto>
 	{
 		public int Id { get; set; }
 	}
 	
 	// ReSharper disable once UnusedMember.Global
-	public class GetPostHandler : IRequestHandler<GetPost, PostDto>
+	public class GetPostHandler : IRequestHandler<GetPostQuery, PostDto>
 	{
 		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 		public GetPostHandler(IUnitOfWorkFactory unitOfWorkFactory)
@@ -22,7 +22,7 @@ namespace Blog.API.Application.Posts.Queries
 			_unitOfWorkFactory = unitOfWorkFactory;
 		}
 		
-		public async Task<PostDto> Handle(GetPost request, CancellationToken cancellationToken)
+		public async Task<PostDto> Handle(GetPostQuery request, CancellationToken cancellationToken)
 		{
 			using (var unitOfWork = _unitOfWorkFactory.Create())
 			{

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Respawn.Postgres;
 
-namespace Blog.API.IntegrationTest
+namespace Blog.API.IntegrationTest.Infrastructure
 {
 	public class TestFactory : WebApplicationFactory<Startup>
 	{

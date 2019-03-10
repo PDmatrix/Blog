@@ -1,4 +1,9 @@
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Blog.API.Application.Posts.Models;
+using Blog.API.IntegrationTest.Infrastructure;
+using FluentAssertions;
 using Xunit;
 
 namespace Blog.API.IntegrationTest.Post
@@ -13,9 +18,8 @@ namespace Blog.API.IntegrationTest.Post
 		[InlineData("api/post")]
 		public async Task GetHttpRequest(string url)
 		{
-			var client = Factory.CreateClient();
-			var response = await client.GetAsync(url);
-			response.EnsureSuccessStatusCode();
+			var allPosts = await HttpHandler.CallAsync<IEnumerable<PostDto>>(HttpHandler.CreateHttpRequestMessage(HttpMethod.Get, url));
+			allPosts.Should().NotBeNull();
 		}
 	}
 }

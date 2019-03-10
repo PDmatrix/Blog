@@ -13,7 +13,6 @@ namespace Blog.API.Features.Post
 {
 	[ApiController]
 	[Produces("application/json")]
-	[Consumes("application/json")]
 	[Route("api/[controller]")]
 	public class PostController : ControllerBase
 	{
@@ -50,6 +49,7 @@ namespace Blog.API.Features.Post
         }
         
         [HttpPost]
+        [Consumes("application/json")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -73,6 +73,7 @@ namespace Blog.API.Features.Post
         }
         
         [HttpPut("{id}")]
+        [Consumes("application/json")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

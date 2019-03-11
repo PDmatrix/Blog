@@ -8,19 +8,15 @@ namespace Blog.API.Persistence
 	{
 		internal UnitOfWork(IDbConnection connection)
 		{
-			_id = Guid.NewGuid();
 			_connection = connection;
 		}
 
 		private readonly IDbConnection _connection;
 		private IDbTransaction _transaction;
-		private readonly Guid _id;
 
 		IDbConnection IUnitOfWork.Connection => _connection;
 
 		IDbTransaction IUnitOfWork.Transaction => _transaction;
-
-		Guid IUnitOfWork.Id => _id;
 
 		public void Begin()
 		{

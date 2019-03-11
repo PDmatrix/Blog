@@ -18,9 +18,6 @@ namespace Blog.API.IntegrationTest.Infrastructure
 		
 		public Task InitializeAsync() => Task.CompletedTask;
 
-		public async Task DisposeAsync()
-		{
-			await _factory.ResetCheckpoint();
-		}
+		public Task DisposeAsync() => _factory.ResetCheckpoint();
 	}
 }

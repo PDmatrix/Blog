@@ -23,10 +23,10 @@ namespace Blog.API.IntegrationTest.Infrastructure
 			return DeserializeJsonFromStream<T>(stream);
 		}
 		
-		public async Task CallAsync(HttpRequestMessage requestMessage)
-		{
-			await SendHttpRequestMessageAsync(requestMessage);
-		}
+		public Task CallAsync(HttpRequestMessage requestMessage)
+        {
+            return SendHttpRequestMessageAsync(requestMessage);
+        }
 
 		private async Task<HttpResponseMessage> SendHttpRequestMessageAsync(HttpRequestMessage requestMessage)
 		{

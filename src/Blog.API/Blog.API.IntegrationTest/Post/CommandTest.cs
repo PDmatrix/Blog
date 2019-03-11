@@ -23,11 +23,11 @@ namespace Blog.API.IntegrationTest.Post
 			createdPost.Content.Should().Be("foo");
 		}
 
-		private async Task<PostDto> AddPost(string url)
+		private Task<PostDto> AddPost(string url)
 		{
 			var createPostMessage = HttpHandler.CreateHttpRequestMessage(HttpMethod.Post, 
 				new PostRequest {Content = "foo"}, url);
-			return await HttpHandler.CallAsync<PostDto>(createPostMessage);
+			return HttpHandler.CallAsync<PostDto>(createPostMessage);
 		}
 		
 		[Theory]

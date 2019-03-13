@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Blog.API.Application.Interfaces;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Blog.API.Infrastructure
@@ -16,14 +20,40 @@ namespace Blog.API.Infrastructure
 
 		public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
 		{
-			var method = context.HttpContext.Request.Method;
 			using (var unitOfWork = _unitOfWorkFactory.Create())
 			{
-				if (method == "GET")
-					await ProcessWithoutTransaction(next);
-				else
-					await ProcessWithTransaction(next, unitOfWork);
+				var method = context.HttpContext.Request.Method;
+				var safeAction = method == "GET" || IsActionTransactionFree(context.ActionDescriptor);
+				if (safeAction)
+				{
+					await next();
+					return;
+				}
+				
+				await ProcessWithTransaction(next, unitOfWork);
 			}
+		}
+
+		private static bool IsActionTransactionFree(ActionDescriptor actionDescriptor)
+		{
+			if (!(actionDescriptor is ControllerActionDescriptor controllerActionDescriptor))
+				return false;
+			
+			var attributes =
+				GetActionAttributes(controllerActionDescriptor)
+				.Union(GetControllerAttributes(controllerActionDescriptor));
+
+			return attributes.Any(r => r.GetType() == typeof(TransactionFreeAttribute));
+		}
+
+		private static IEnumerable<object> GetActionAttributes(ControllerActionDescriptor controllerActionDescriptor)
+		{
+			return controllerActionDescriptor.MethodInfo.GetCustomAttributes(true);
+		}
+		
+		private static IEnumerable<object> GetControllerAttributes(ControllerActionDescriptor controllerActionDescriptor)
+		{
+			return controllerActionDescriptor.ControllerTypeInfo.GetCustomAttributes(true);
 		}
 
 		private static async Task ProcessWithTransaction(
@@ -47,11 +77,6 @@ namespace Blog.API.Infrastructure
 				unitOfWork.Rollback();
 				throw;
 			}
-		}
-
-		private static async Task ProcessWithoutTransaction(ActionExecutionDelegate next)
-		{
-			await next();
 		}
 	}
 }

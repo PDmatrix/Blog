@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Blog.API.Application.Posts.Commands;
 using Blog.API.Application.Posts.Models;
 using Blog.API.Application.Posts.Queries;
+using Blog.API.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -58,7 +59,6 @@ namespace Blog.API.Features.Post
         }
         
         [HttpDelete("{id}")]
-        [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult> Delete(int id)
         {
@@ -73,6 +73,16 @@ namespace Blog.API.Features.Post
 	        await _mediator.Send(
 		        new UpdatePostCommand {Id = id, Content = postRequest.Content});
 	        return NoContent();
+        }
+
+        [HttpPost("preview")]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [Consumes("application/json")]
+        [TransactionFree]
+        public async Task<ActionResult<string>> Preview(PostRequest postRequest)
+        {
+	        return await _mediator.Send(new PreviewQuery {Content = postRequest.Content});
         }
 	}
 }

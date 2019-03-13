@@ -29,54 +29,13 @@ namespace Blog.API
 	
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddApiVersioning(options =>
-			{
-				options.AssumeDefaultVersionWhenUnspecified = true;
-				options.ApiVersionReader = new UrlSegmentApiVersionReader();
-				options.DefaultApiVersion = new ApiVersion(1, 0);
-			});
-			services.AddVersionedApiExplorer(options => { options.GroupNameFormat = "VV"; });
-			
-			services.AddMvcCore(opt =>
-				{
-					opt.Filters.Add(typeof(TransactionFilter));
-				})
-				.AddCors()
-				.AddJsonFormatters()
-				.AddFluentValidation(x =>
-				{
-					x.RegisterValidatorsFromAssemblyContaining<Startup>();
-					x.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
-				})
-				.AddJsonOptions(x =>
-				{
-					x.SerializerSettings.ContractResolver = new DefaultContractResolver
-					{
-						NamingStrategy = new SnakeCaseNamingStrategy()
-					};
-				})
-				.SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-				
+			services.AddCustomApiVersioning();
+			services.AddCustomMvc();
 			services.AddScoped<IUnitOfWorkFactory>(provider => 
 					new UnitOfWorkFactory(Config.GetConnectionString("DefaultConnection")));
-
 			services.AddScoped<IConverter<string, string>, MarkdownConverter>();
-			
 			services.AddMediatR(typeof(GetAllPostsHandler));
-			services.AddSwaggerDocument(options =>
-			{
-				options.PostProcess = document =>
-				{
-					document.Info.Version = "1.0";
-					document.Info.Title = "My Blog";
-					document.Info.Description = "My personal blog";
-					document.Info.License = new NSwag.SwaggerLicense
-					{
-						Name = "MIT",
-						Url = "https://github.com/PDmatrix/Blog/blob/master/LICENSE"
-					};
-				};
-			});
+			services.AddCustomSwagger();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)

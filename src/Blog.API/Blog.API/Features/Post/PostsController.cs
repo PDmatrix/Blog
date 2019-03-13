@@ -14,11 +14,11 @@ namespace Blog.API.Features.Post
 	[ApiController]
 	[Produces("application/json")]
 	[Route("api/[controller]")]
-	public class PostController : ControllerBase
+	public class PostsController : ControllerBase
 	{
 		private readonly IMediator _mediator;
 		
-		public PostController(IMediator mediator)
+		public PostsController(IMediator mediator)
 		{
 			_mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 		}

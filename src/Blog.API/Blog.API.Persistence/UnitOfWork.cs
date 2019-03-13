@@ -25,19 +25,24 @@ namespace Blog.API.Persistence
 		public void Commit()
 		{
 			_transaction.Commit();
-			Dispose();
+			DisposeTransaction();
 		}
 
 		public void Rollback()
 		{
 			_transaction?.Rollback();
-			Dispose();
+			DisposeTransaction();
+		}
+
+		private void DisposeTransaction()
+		{
+			_transaction?.Dispose();
+			_transaction = null;
 		}
 
 		public void Dispose()
 		{
-			_transaction?.Dispose();
-			_transaction = null;
+			_connection.Dispose();
 		}
 	}
 }

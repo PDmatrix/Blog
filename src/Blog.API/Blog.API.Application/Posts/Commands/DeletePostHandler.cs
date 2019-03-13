@@ -14,24 +14,21 @@ namespace Blog.API.Application.Posts.Commands
 	// ReSharper disable once UnusedMember.Global
 	public class DeletePostHandler : AsyncRequestHandler<DeletePostCommand>
 	{
-		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-
+		private readonly IUnitOfWork _unitOfWork;
+		
 		public DeletePostHandler(IUnitOfWorkFactory unitOfWorkFactory)
 		{
-			_unitOfWorkFactory = unitOfWorkFactory;
+			_unitOfWork = unitOfWorkFactory.Create();
 		}
 
 		protected override async Task Handle(DeletePostCommand request, CancellationToken cancellationToken)
 		{
-			using (var unitOfWork = _unitOfWorkFactory.Create())
-			{
-				const string sql =
-					@"
-					DELETE FROM post
-					WHERE id = @id
-					";
-				await unitOfWork.Connection.ExecuteAsync(sql, new {id = request.Id}, unitOfWork.Transaction);
-			}
+			const string sql =
+				@"
+				DELETE FROM post
+				WHERE id = @id
+				";
+			await _unitOfWork.Connection.ExecuteAsync(sql, new {id = request.Id}, _unitOfWork.Transaction);
 		}
 	}
 }

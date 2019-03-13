@@ -15,24 +15,21 @@ namespace Blog.API.Application.Posts.Commands
 	// ReSharper disable once UnusedMember.Global
 	public class UpdatePostHandler : AsyncRequestHandler<UpdatePostCommand>
 	{
-		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-
+		private readonly IUnitOfWork _unitOfWork;
+		
 		public UpdatePostHandler(IUnitOfWorkFactory unitOfWorkFactory)
 		{
-			_unitOfWorkFactory = unitOfWorkFactory;
+			_unitOfWork = unitOfWorkFactory.Create();
 		}
 
 		protected override async Task Handle(UpdatePostCommand request, CancellationToken cancellationToken)
 		{
-			using (var unitOfWork = _unitOfWorkFactory.Create())
-			{
-				const string sql =
-					@"
-					UPDATE post SET content = @content
-					WHERE id = @id
-					";
-				await unitOfWork.Connection.ExecuteAsync(sql, request, unitOfWork.Transaction);
-			}
+			const string sql =
+				@"
+				UPDATE post SET content = @content
+				WHERE id = @id
+				";
+			await _unitOfWork.Connection.ExecuteAsync(sql, request, _unitOfWork.Transaction);
 		}
 	}
 }

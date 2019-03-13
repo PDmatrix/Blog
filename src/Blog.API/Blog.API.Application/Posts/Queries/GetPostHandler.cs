@@ -16,29 +16,27 @@ namespace Blog.API.Application.Posts.Queries
 	// ReSharper disable once UnusedMember.Global
 	public class GetPostHandler : IRequestHandler<GetPostQuery, PostDto>
 	{
-		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 		private readonly IConverter<string, string> _converter;
+		private readonly IUnitOfWork _unitOfWork;
+		
 		public GetPostHandler(
 			IUnitOfWorkFactory unitOfWorkFactory, 
 			IConverter<string, string> converter)
 		{
-			_unitOfWorkFactory = unitOfWorkFactory;
 			_converter = converter;
+			_unitOfWork = unitOfWorkFactory.Create();
 		}
 		
 		public async Task<PostDto> Handle(GetPostQuery request, CancellationToken cancellationToken)
 		{
-			using (var unitOfWork = _unitOfWorkFactory.Create())
-			{
-				const string sql =
-					@"
-					SELECT id, content FROM post
-					WHERE id = @id
-					";
-				object sqlParam = new {id = request.Id};
-				var post = (await unitOfWork.Connection.QueryAsync<PostDto>(sql, sqlParam, unitOfWork.Transaction)).FirstOrDefault();
-				return PostSharedLogic.GetConvertedPostDto(post, _converter);
-			}
+			const string sql =
+				@"
+				SELECT id, content FROM post
+				WHERE id = @id
+				";
+			object sqlParam = new {id = request.Id};
+			var post = (await _unitOfWork.Connection.QueryAsync<PostDto>(sql, sqlParam, _unitOfWork.Transaction)).FirstOrDefault();
+			return PostSharedLogic.GetConvertedPostDto(post, _converter);
 		}
 
 		

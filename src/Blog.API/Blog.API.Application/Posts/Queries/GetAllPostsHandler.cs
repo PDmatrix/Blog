@@ -17,30 +17,28 @@ namespace Blog.API.Application.Posts.Queries
 	// ReSharper disable once UnusedMember.Global
 	public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, IEnumerable<PostDto>>
 	{
-		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 		private readonly IConverter<string, string> _converter;
+		private readonly IUnitOfWork _unitOfWork;
+		
 		public GetAllPostsHandler(
 			IUnitOfWorkFactory unitOfWorkFactory, 
 			IConverter<string, string> converter)
 		{
-			_unitOfWorkFactory = unitOfWorkFactory;
 			_converter = converter;
+			_unitOfWork = unitOfWorkFactory.Create();
 		}
 		
 		public async Task<IEnumerable<PostDto>> Handle(GetAllPostsQuery request, CancellationToken ct)
 		{
-			using (var unitOfWork = _unitOfWorkFactory.Create())
-			{
-				const string sql =
-					@"
-					SELECT id, content FROM post
-					LIMIT @pageSize OFFSET @page
-					";
-				const int pageSize = 10;
-				object sqlParam = new {pageSize, page = (request.Page - 1) * pageSize };
-				var posts = (await unitOfWork.Connection.QueryAsync<PostDto>(sql, sqlParam, unitOfWork.Transaction)).ToList();
-				return posts.Select(r => PostSharedLogic.GetConvertedPostDto(r, _converter));
-			}
+			const string sql =
+				@"
+				SELECT id, content FROM post
+				LIMIT @pageSize OFFSET @page
+				";
+			const int pageSize = 10;
+			object sqlParam = new {pageSize, page = (request.Page - 1) * pageSize };
+			var posts = (await _unitOfWork.Connection.QueryAsync<PostDto>(sql, sqlParam, _unitOfWork.Transaction)).ToList();
+			return posts.Select(r => PostSharedLogic.GetConvertedPostDto(r, _converter));
 		}
 	}
 }

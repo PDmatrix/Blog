@@ -15,25 +15,22 @@ namespace Blog.API.Application.Posts.Commands
 	// ReSharper disable once UnusedMember.Global
 	public class AddPostHandler : IRequestHandler<AddPostCommand, PostDto>
 	{
-		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+		private readonly IUnitOfWork _unitOfWork;
 		
 		public AddPostHandler(IUnitOfWorkFactory unitOfWorkFactory)
 		{
-			_unitOfWorkFactory = unitOfWorkFactory;
+			_unitOfWork = unitOfWorkFactory.Create();
 		}
 		
 		public async Task<PostDto> Handle(AddPostCommand request, CancellationToken cancellationToken)
 		{
-			using (var unitOfWork = _unitOfWorkFactory.Create())
-			{
-				const string sql =
-					@"
-					INSERT INTO post (content) VALUES (@content)
-					RETURNING id, content
-					";
-				var post = await unitOfWork.Connection.QuerySingleOrDefaultAsync<PostDto>(sql, request, unitOfWork.Transaction);
-				return post;
-			}
+			const string sql =
+				@"
+				INSERT INTO post (content) VALUES (@content)
+				RETURNING id, content
+				";
+			var post = await _unitOfWork.Connection.QuerySingleOrDefaultAsync<PostDto>(sql, request, _unitOfWork.Transaction);
+			return post;
 		}
 	}
 }

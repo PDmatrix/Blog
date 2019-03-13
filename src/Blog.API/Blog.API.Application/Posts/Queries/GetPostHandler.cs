@@ -17,9 +17,13 @@ namespace Blog.API.Application.Posts.Queries
 	public class GetPostHandler : IRequestHandler<GetPostQuery, PostDto>
 	{
 		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-		public GetPostHandler(IUnitOfWorkFactory unitOfWorkFactory)
+		private readonly IConverter<string, string> _converter;
+		public GetPostHandler(
+			IUnitOfWorkFactory unitOfWorkFactory, 
+			IConverter<string, string> converter)
 		{
 			_unitOfWorkFactory = unitOfWorkFactory;
+			_converter = converter;
 		}
 		
 		public async Task<PostDto> Handle(GetPostQuery request, CancellationToken cancellationToken)
@@ -32,8 +36,11 @@ namespace Blog.API.Application.Posts.Queries
 					WHERE id = @id
 					";
 				object sqlParam = new {id = request.Id};
-				return (await unitOfWork.Connection.QueryAsync<PostDto>(sql, sqlParam, unitOfWork.Transaction)).FirstOrDefault();
+				var post = (await unitOfWork.Connection.QueryAsync<PostDto>(sql, sqlParam, unitOfWork.Transaction)).FirstOrDefault();
+				return PostSharedLogic.GetConvertedPostDto(post, _converter);
 			}
 		}
+
+		
 	}
 }

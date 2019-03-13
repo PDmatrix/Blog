@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Blog.API.MarkDig\Blog.API.MarkDig.csproj" />
       <ProjectReference Include="..\Blog.API.Persistence\Blog.API.Persistence.csproj" />
     </ItemGroup>
 

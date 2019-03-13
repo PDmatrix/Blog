@@ -15,7 +15,7 @@ namespace Blog.API.IntegrationTest.Post
 		}
 		
 		[Theory]
-		[InlineData("api/post")]
+		[InlineData("api/posts")]
 		public async Task GetHttpRequest(string url)
 		{
 			var allPosts = await HttpHandler.CallAsync<IEnumerable<PostDto>>(HttpHandler.CreateHttpRequestMessage(HttpMethod.Get, url));

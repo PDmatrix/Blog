@@ -31,8 +31,8 @@ namespace Blog.API.Application.Posts.Commands
 					INSERT INTO post (content) VALUES (@content)
 					RETURNING id, content
 					";
-				var res = await unitOfWork.Connection.QuerySingleOrDefaultAsync<PostDto>(sql, request, unitOfWork.Transaction);
-				return res;
+				var post = await unitOfWork.Connection.QuerySingleOrDefaultAsync<PostDto>(sql, request, unitOfWork.Transaction);
+				return post;
 			}
 		}
 	}

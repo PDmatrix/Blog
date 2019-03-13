@@ -16,7 +16,7 @@ namespace Blog.API.IntegrationTest.Post
 		}
 
 		[Theory]
-		[InlineData("api/post")]
+		[InlineData("api/posts")]
 		public async Task AddPostTheory(string url)
 		{
 			var createdPost = await AddPost(url);
@@ -31,7 +31,7 @@ namespace Blog.API.IntegrationTest.Post
 		}
 		
 		[Theory]
-		[InlineData("api/post")]
+		[InlineData("api/posts")]
 		public async Task UpdatePostTheory(string url)
 		{
 			var createdPost = await AddPost(url);
@@ -40,11 +40,11 @@ namespace Blog.API.IntegrationTest.Post
 			await HttpHandler.CallAsync(updatePostMessage);
 			
 			var updatedPost = await HttpHandler.CallAsync<PostDto>(HttpHandler.CreateHttpRequestMessage(HttpMethod.Get, $"{url}/{createdPost.Id}"));
-			updatedPost.Content.Should().Be("bar");
+			updatedPost.Content.Should().Be("<p>bar</p>");
 		}
 		
 		[Theory]
-		[InlineData("api/post")]
+		[InlineData("api/posts")]
 		public async Task DeletePostTheory(string url)
 		{
 			var createdPost = await AddPost(url);

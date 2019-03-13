@@ -18,9 +18,13 @@ namespace Blog.API.Application.Posts.Queries
 	public class GetAllPostsHandler : IRequestHandler<GetAllPostsQuery, IEnumerable<PostDto>>
 	{
 		private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-		public GetAllPostsHandler(IUnitOfWorkFactory unitOfWorkFactory)
+		private readonly IConverter<string, string> _converter;
+		public GetAllPostsHandler(
+			IUnitOfWorkFactory unitOfWorkFactory, 
+			IConverter<string, string> converter)
 		{
 			_unitOfWorkFactory = unitOfWorkFactory;
+			_converter = converter;
 		}
 		
 		public async Task<IEnumerable<PostDto>> Handle(GetAllPostsQuery request, CancellationToken ct)
@@ -34,7 +38,8 @@ namespace Blog.API.Application.Posts.Queries
 					";
 				const int pageSize = 10;
 				object sqlParam = new {pageSize, page = (request.Page - 1) * pageSize };
-				return (await unitOfWork.Connection.QueryAsync<PostDto>(sql, sqlParam, unitOfWork.Transaction)).ToList();
+				var posts = (await unitOfWork.Connection.QueryAsync<PostDto>(sql, sqlParam, unitOfWork.Transaction)).ToList();
+				return posts.Select(r => PostSharedLogic.GetConvertedPostDto(r, _converter));
 			}
 		}
 	}

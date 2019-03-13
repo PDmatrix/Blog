@@ -3,6 +3,7 @@ using Blog.API.Application.Posts.Commands;
 using Blog.API.Application.Posts.Models;
 using Blog.API.Application.Posts.Queries;
 using Blog.API.Infrastructure;
+using Blog.API.MarkDig;
 using Blog.API.Persistence;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -59,6 +60,8 @@ namespace Blog.API
 			services.AddScoped<IUnitOfWorkFactory>(provider => 
 					new UnitOfWorkFactory(Config.GetConnectionString("DefaultConnection")));
 
+			services.AddScoped<IConverter<string, string>, MarkdownConverter>();
+			
 			services.AddMediatR(typeof(GetAllPostsHandler));
 			services.AddSwaggerDocument(options =>
 			{

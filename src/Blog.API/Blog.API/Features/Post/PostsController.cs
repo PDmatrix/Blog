@@ -57,7 +57,6 @@ namespace Blog.API.Features.Post
 		        createdPost);
         }
         
-        // TODO : Returning 204 or 200?
         [HttpDelete("{id}")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

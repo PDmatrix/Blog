@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <TieredCompilation>true</TieredCompilation>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Blog.API.Application\Blog.API.Application.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Markdig" Version="0.16.0" />
+    </ItemGroup>
+
+</Project>

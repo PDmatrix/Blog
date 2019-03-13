@@ -40,20 +40,16 @@ namespace Blog.API.Infrastructure
 				return false;
 			
 			var attributes =
-				GetActionAttributes(controllerActionDescriptor)
-				.Union(GetControllerAttributes(controllerActionDescriptor));
+				GetActionAttributes()
+				.Union(GetControllerAttributes());
 
 			return attributes.Any(r => r.GetType() == typeof(TransactionFreeAttribute));
-		}
 
-		private static IEnumerable<object> GetActionAttributes(ControllerActionDescriptor controllerActionDescriptor)
-		{
-			return controllerActionDescriptor.MethodInfo.GetCustomAttributes(true);
-		}
-		
-		private static IEnumerable<object> GetControllerAttributes(ControllerActionDescriptor controllerActionDescriptor)
-		{
-			return controllerActionDescriptor.ControllerTypeInfo.GetCustomAttributes(true);
+			IEnumerable<object> GetActionAttributes() =>
+				controllerActionDescriptor.MethodInfo.GetCustomAttributes(true);
+
+			IEnumerable<object> GetControllerAttributes() =>
+				controllerActionDescriptor.ControllerTypeInfo.GetCustomAttributes(true);
 		}
 
 		private static async Task ProcessWithTransaction(

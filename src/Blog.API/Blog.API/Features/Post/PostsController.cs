@@ -36,9 +36,6 @@ namespace Blog.API.Features.Post
 		}
         
         [HttpGet("{id}")]
-        [ProducesDefaultResponseType]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PostDto>> GetById(int id)
         {
 	        var res = await _mediator.Send(new GetPostQuery {Id = id});
@@ -50,10 +47,7 @@ namespace Blog.API.Features.Post
         
         [HttpPost]
         [Consumes("application/json")]
-        [ProducesDefaultResponseType]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult> Add(PostRequest postRequest)
+        public async Task<ActionResult> Create(PostRequest postRequest)
         {
 	        var createdPost = await _mediator.Send(
 		        new AddPostCommand {Content = postRequest.Content});
@@ -63,6 +57,7 @@ namespace Blog.API.Features.Post
 		        createdPost);
         }
         
+        // TODO : Returning 204 or 200?
         [HttpDelete("{id}")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -74,9 +69,6 @@ namespace Blog.API.Features.Post
         
         [HttpPut("{id}")]
         [Consumes("application/json")]
-        [ProducesDefaultResponseType]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult> Update(int id, PostRequest postRequest)
         {
 	        await _mediator.Send(

@@ -21,21 +21,28 @@ namespace Blog.API
 	public class Startup
 	{
 		private IConfiguration Config { get; }
+		private IHostingEnvironment Environment { get; }
 		
-		public Startup(IConfiguration config)
+		public Startup(IConfiguration config, IHostingEnvironment environment)
 		{
 			Config = config;
+			Environment = environment;
 		}
 	
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.Configure<AuthSettings>(Config.GetSection("AuthOptions"));
+			services.AddOptions();
 			services.AddCustomApiVersioning();
-			services.AddCustomMvc();
+			services.AddCustomMvc(Environment);
+			var authSettings = Config.GetSection("AuthOptions").Get<AuthSettings>();
+			services.AddCustomAuthentication(authSettings.Authority, authSettings.Scope);
+			services.AddCustomHttpClientFactory(authSettings.Authority);
+			services.AddCustomSwagger();
 			services.AddScoped<IUnitOfWorkFactory>(provider => 
 					new UnitOfWorkFactory(Config.GetConnectionString("DefaultConnection")));
 			services.AddScoped<IConverter<string, string>, MarkdownConverter>();
 			services.AddMediatR(typeof(GetAllPostsHandler));
-			services.AddCustomSwagger();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -44,6 +51,10 @@ namespace Blog.API
 			{
 				app.UseDeveloperExceptionPage();
 			}
+			
+			if (!env.IsEnvironment("Testing"))
+				app.UseAuthentication();
+			
 			app.UseMvc(routes =>
 			{
 				routes.MapRoute(

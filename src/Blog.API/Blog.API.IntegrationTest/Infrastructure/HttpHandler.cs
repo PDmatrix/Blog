@@ -51,7 +51,7 @@ namespace Blog.API.IntegrationTest.Infrastructure
 		private static T DeserializeJsonFromStream<T>(Stream stream)
 		{
 			if (stream == null || stream.CanRead == false)
-				return default(T);
+				return default;
 
 			using (var sr = new StreamReader(stream))
 			using (var jtr = new JsonTextReader(sr))

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,24 +5,15 @@ using Blog.API.Application.Posts.Commands;
 using Blog.API.Application.Posts.Models;
 using Blog.API.Application.Posts.Queries;
 using Blog.API.Infrastructure;
-using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.API.Features.Post
 {
-	[ApiController]
-	[Produces("application/json")]
-	[Route("api/[controller]")]
-	public class PostsController : ControllerBase
+	
+	public class PostsController : BaseController
 	{
-		private readonly IMediator _mediator;
-		
-		public PostsController(IMediator mediator)
-		{
-			_mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-		}
-
 		[HttpGet]
 		[ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -32,25 +22,26 @@ namespace Blog.API.Features.Post
 			if (page < 1)
 				page = 1;
 			
-			var res = await _mediator.Send(new GetAllPostsQuery {Page = page});
+			var res = await Mediator.Send(new GetAllPostsQuery {Page = page});
 			return res.ToList();
 		}
         
         [HttpGet("{id}")]
         public async Task<ActionResult<PostDto>> GetById(int id)
         {
-	        var res = await _mediator.Send(new GetPostQuery {Id = id});
+	        var res = await Mediator.Send(new GetPostQuery {Id = id});
 	        if (res == null)
 		        return NotFound();
 	        
 	        return res;
         }
         
+        [Authorize]
         [HttpPost]
         [Consumes("application/json")]
         public async Task<ActionResult> Create(PostRequest postRequest)
         {
-	        var createdPost = await _mediator.Send(
+	        var createdPost = await Mediator.Send(
 		        new AddPostCommand {Content = postRequest.Content});
 	        return CreatedAtAction(
 		        nameof(GetById), 
@@ -58,19 +49,21 @@ namespace Blog.API.Features.Post
 		        createdPost);
         }
         
+        [Authorize]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult> Delete(int id)
         {
-	        await _mediator.Send(new DeletePostCommand {Id = id});
+	        await Mediator.Send(new DeletePostCommand {Id = id});
 	        return NoContent();
         }
         
+        [Authorize]
         [HttpPut("{id}")]
         [Consumes("application/json")]
         public async Task<ActionResult> Update(int id, PostRequest postRequest)
         {
-	        await _mediator.Send(
+	        await Mediator.Send(
 		        new UpdatePostCommand {Id = id, Content = postRequest.Content});
 	        return NoContent();
         }
@@ -82,7 +75,7 @@ namespace Blog.API.Features.Post
         [TransactionFree]
         public async Task<ActionResult<string>> Preview(PostRequest postRequest)
         {
-	        return await _mediator.Send(new PreviewQuery {Content = postRequest.Content});
+	        return await Mediator.Send(new PreviewQuery {Content = postRequest.Content});
         }
 	}
 }

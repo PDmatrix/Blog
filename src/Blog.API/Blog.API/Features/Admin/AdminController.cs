@@ -16,6 +16,7 @@ namespace Blog.API.Features.Admin
 			_options = options;
 		}
 
+		// TODO: Remove Login, it should be done on the client side
 		[HttpPost("login")]
 		[Consumes("application/json")]
 		[ProducesDefaultResponseType]

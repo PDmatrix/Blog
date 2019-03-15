@@ -19,6 +19,8 @@ namespace Identity
 		
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+			
 			var builder = services.AddIdentityServer()
 				.AddInMemoryApiResources(Config.GetApis())
 				.AddInMemoryClients(Config.GetClients())
@@ -41,7 +43,9 @@ namespace Identity
 				app.UseDeveloperExceptionPage();
 			}
 
+			app.UseStaticFiles();
 			app.UseIdentityServer();
+			app.UseMvcWithDefaultRoute();
 		}
 	}
 }

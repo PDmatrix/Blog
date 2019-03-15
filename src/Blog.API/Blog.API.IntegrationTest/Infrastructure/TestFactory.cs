@@ -2,6 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Respawn.Postgres;
 
@@ -28,7 +29,7 @@ namespace Blog.API.IntegrationTest.Infrastructure
 			builder.UseEnvironment("Testing");
 			Configuration = new ConfigurationBuilder()
 				.SetBasePath(Directory.GetCurrentDirectory())
-				.AddJsonFile("appsettings.json", true, true)
+				.AddJsonFile("appsettings.Testing.json", true, true)
 				.Build();
 			builder.UseConfiguration(Configuration);
 		}

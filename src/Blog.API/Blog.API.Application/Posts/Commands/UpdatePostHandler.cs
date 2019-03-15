@@ -10,6 +10,8 @@ namespace Blog.API.Application.Posts.Commands
 	{
 		public int Id { get; set; }
 		public string Content { get; set; }	
+		public string Title { get; set; }
+		public string Excerpt { get; set; }
 	}
 	
 	// ReSharper disable once UnusedMember.Global
@@ -26,7 +28,7 @@ namespace Blog.API.Application.Posts.Commands
 		{
 			const string sql =
 				@"
-				UPDATE post SET content = @content
+				UPDATE post SET content = @content, excerpt = @excerpt, title = @title
 				WHERE id = @id
 				";
 			await _unitOfWork.Connection.ExecuteAsync(sql, request, _unitOfWork.Transaction);

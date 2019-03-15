@@ -31,14 +31,21 @@ namespace Blog.API.Application.Posts.Queries
 		{
 			const string sql =
 				@"
-				SELECT id, content FROM post
+				SELECT id, content, title FROM post
 				WHERE id = @id
 				";
 			object sqlParam = new {id = request.Id};
 			var post = (await _unitOfWork.Connection.QueryAsync<PostDto>(sql, sqlParam, _unitOfWork.Transaction)).FirstOrDefault();
-			return PostSharedLogic.GetConvertedPostDto(post, _converter);
+			return GetConvertedPostDto(post, _converter);
 		}
-
 		
+		private static PostDto GetConvertedPostDto(PostDto post, IConverter<string, string> converter)
+		{
+			if (post == null)
+				return null;
+			
+			post.Content = converter.Convert(post.Content);
+			return post;
+		}
 	}
 }

@@ -18,7 +18,7 @@ namespace Blog.API.IntegrationTest.Post
 		[InlineData("api/posts")]
 		public async Task GetHttpRequest(string url)
 		{
-			var allPosts = await HttpHandler.CallAsync<IEnumerable<PostDto>>(HttpHandler.CreateHttpRequestMessage(HttpMethod.Get, url));
+			var allPosts = await HttpHandler.CallAsync<IEnumerable<PostPreviewDto>>(HttpHandler.CreateHttpRequestMessage(HttpMethod.Get, url));
 			allPosts.Should().NotBeNull();
 		}
 	}

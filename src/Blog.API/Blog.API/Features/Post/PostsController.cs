@@ -17,7 +17,7 @@ namespace Blog.API.Features.Post
 		[HttpGet]
 		[ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<PostDto>>> GetAll(int page = 1)
+        public async Task<ActionResult<IEnumerable<PostPreviewDto>>> GetAll(int page = 1)
 		{
 			if (page < 1)
 				page = 1;
@@ -41,12 +41,14 @@ namespace Blog.API.Features.Post
         [Consumes("application/json")]
         public async Task<ActionResult> Create(PostRequest postRequest)
         {
-	        var createdPost = await Mediator.Send(
-		        new AddPostCommand {Content = postRequest.Content});
-	        return CreatedAtAction(
-		        nameof(GetById), 
-		        new {id = createdPost.Id}, 
-		        createdPost);
+	        var addPostCommand = new AddPostCommand
+	        {
+		        Content = postRequest.Content,
+		        Title = postRequest.Title,
+		        Excerpt = postRequest.Excerpt
+	        };
+	        var createdPostId = await Mediator.Send(addPostCommand);
+	        return StatusCode(StatusCodes.Status201Created, new {Id = createdPostId});
         }
         
         [Authorize]
@@ -63,8 +65,14 @@ namespace Blog.API.Features.Post
         [Consumes("application/json")]
         public async Task<ActionResult> Update(int id, PostRequest postRequest)
         {
-	        await Mediator.Send(
-		        new UpdatePostCommand {Id = id, Content = postRequest.Content});
+	        var updatePostCommand = new UpdatePostCommand
+	        {
+		        Id = id,
+		        Content = postRequest.Content,
+		        Title = postRequest.Title,
+		        Excerpt = postRequest.Excerpt
+	        };
+	        await Mediator.Send(updatePostCommand);
 	        return NoContent();
         }
 
@@ -73,9 +81,9 @@ namespace Blog.API.Features.Post
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Consumes("application/json")]
         [TransactionFree]
-        public async Task<ActionResult<string>> Preview(PostRequest postRequest)
+        public async Task<ActionResult<string>> Preview(PreviewRequest previewRequest)
         {
-	        return await Mediator.Send(new PreviewQuery {Content = postRequest.Content});
+	        return await Mediator.Send(new PreviewQuery {Content = previewRequest.Content});
         }
 	}
 }

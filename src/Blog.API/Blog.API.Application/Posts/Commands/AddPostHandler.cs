@@ -1,19 +1,20 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Blog.API.Application.Interfaces;
-using Blog.API.Application.Posts.Models;
 using Dapper;
 using MediatR;
 
 namespace Blog.API.Application.Posts.Commands
 {
-	public class AddPostCommand : IRequest<PostDto>
+	public class AddPostCommand : IRequest<int>
 	{
 		public string Content { get; set; }
+		public string Title { get; set; }
+		public string Excerpt { get; set; }
 	}
 	
 	// ReSharper disable once UnusedMember.Global
-	public class AddPostHandler : IRequestHandler<AddPostCommand, PostDto>
+	public class AddPostHandler : IRequestHandler<AddPostCommand, int>
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		
@@ -22,15 +23,16 @@ namespace Blog.API.Application.Posts.Commands
 			_unitOfWork = unitOfWorkFactory.Create();
 		}
 		
-		public async Task<PostDto> Handle(AddPostCommand request, CancellationToken cancellationToken)
+		public async Task<int> Handle(AddPostCommand request, CancellationToken cancellationToken)
 		{
 			const string sql =
 				@"
-				INSERT INTO post (content) VALUES (@content)
-				RETURNING id, content
+				INSERT INTO post (content, excerpt, title) 
+					VALUES (@content, @excerpt, @title)
+				RETURNING id
 				";
-			var post = await _unitOfWork.Connection.QuerySingleOrDefaultAsync<PostDto>(sql, request, _unitOfWork.Transaction);
-			return post;
+			var postId = await _unitOfWork.Connection.QuerySingleOrDefaultAsync<int>(sql, request, _unitOfWork.Transaction);
+			return postId;
 		}
 	}
 }

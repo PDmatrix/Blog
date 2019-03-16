@@ -52,9 +52,7 @@ namespace Blog.API
 				app.UseDeveloperExceptionPage();
 			}
 			
-			if (!env.IsEnvironment("Testing"))
-				app.UseAuthentication();
-			
+			app.UseAuthentication();
 			app.UseMvc(routes =>
 			{
 				routes.MapRoute(

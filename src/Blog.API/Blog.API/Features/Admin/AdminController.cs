@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
 using Blog.API.Application.Admin.Commands;
 using Blog.API.Infrastructure;
-using IdentityModel.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http;
 
 namespace Blog.API.Features.Admin
 {
@@ -20,7 +20,8 @@ namespace Blog.API.Features.Admin
 		[HttpPost("login")]
 		[Consumes("application/json")]
 		[ProducesDefaultResponseType]
-		public async Task<ActionResult<string>> Login(AdminRequest adminRequest)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<string>> Login(AdminRequest adminRequest)
 		{
 			var authOptions = _options.Value;
 			return await Mediator.Send(new LoginCommand

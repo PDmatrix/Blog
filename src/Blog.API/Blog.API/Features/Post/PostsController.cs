@@ -8,10 +8,10 @@ using Blog.API.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace Blog.API.Features.Post
 {
-	
 	public class PostsController : BaseController
 	{
 		[HttpGet]
@@ -48,7 +48,7 @@ namespace Blog.API.Features.Post
 		        Excerpt = postRequest.Excerpt
 	        };
 	        var createdPostId = await Mediator.Send(addPostCommand);
-	        return StatusCode(StatusCodes.Status201Created, new {Id = createdPostId});
+	        return CreatedAtRoute(nameof(GetById),new {Id = createdPostId});
         }
         
         [Authorize]
@@ -81,7 +81,7 @@ namespace Blog.API.Features.Post
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Consumes("application/json")]
         [TransactionFree]
-        public async Task<ActionResult<string>> Preview(PreviewRequest previewRequest)
+        public async Task<ActionResult<PreviewDto>> Preview(PreviewRequest previewRequest)
         {
 	        return await Mediator.Send(new PreviewQuery {Content = previewRequest.Content});
         }

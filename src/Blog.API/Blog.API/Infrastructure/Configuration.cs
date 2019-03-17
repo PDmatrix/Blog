@@ -1,11 +1,16 @@
 using System;
+using System.Buffers;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using NSwag;
+using NSwag.SwaggerGeneration.Processors.Security;
 
 namespace Blog.API.Infrastructure
 {
@@ -21,10 +26,10 @@ namespace Blog.API.Infrastructure
 				if (environment.IsEnvironment("Testing"))
 					opt.Filters.Add(typeof(AllowAnonymousFilter));
 				opt.Filters.Add(typeof(TransactionFilter));
+				opt.OutputFormatters.Add(new JsonOutputFormatter(new JsonSerializerSettings(), ArrayPool<char>.Shared));
 			});
 			builder.AddAuthorization();
 			builder.AddCors();
-			builder.AddJsonFormatters();
 			builder.AddFluentValidation(x =>
 			{
 				x.RegisterValidatorsFromAssemblyContaining<Startup>();
@@ -48,12 +53,20 @@ namespace Blog.API.Infrastructure
 			
 			services.AddSwaggerDocument(options =>
 			{
+				options.OperationProcessors.Add(new OperationSecurityScopeProcessor("JWT"));
+				options.DocumentProcessors.Add(new SecurityDefinitionAppender("JWT", new SwaggerSecurityScheme
+				{
+					Type = SwaggerSecuritySchemeType.ApiKey,
+					Name = "Authorization",
+					In = SwaggerSecurityApiKeyLocation.Header,
+					Description = "Type into the textbox: Bearer {your JWT token}."
+				}));
 				options.PostProcess = document =>
 				{
-					document.Info.Version = "1.0";
+					document.Info.Version = "1.0";	
 					document.Info.Title = "My Blog";
 					document.Info.Description = "My personal blog";
-					document.Info.License = new NSwag.SwaggerLicense
+					document.Info.License = new SwaggerLicense
 					{
 						Name = "MIT",
 						Url = "https://github.com/PDmatrix/Blog/blob/master/LICENSE"

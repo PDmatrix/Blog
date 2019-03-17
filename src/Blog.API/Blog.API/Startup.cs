@@ -51,7 +51,8 @@ namespace Blog.API
 			{
 				app.UseDeveloperExceptionPage();
 			}
-			
+
+			app.UseCors(options => options.WithOrigins("http://localhost:3000"));
 			app.UseAuthentication();
 			app.UseMvc(routes =>
 			{

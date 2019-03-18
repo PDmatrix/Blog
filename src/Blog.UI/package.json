@@ -10,14 +10,17 @@
   "dependencies": {
     "@zeit/next-typescript": "^1.1.1",
     "axios": "^0.18.0",
+    "formik": "^1.5.1",
     "next": "^8.0.3",
     "react": "16.8.4",
-    "react-dom": "16.8.4"
+    "react-dom": "16.8.4",
+    "yup": "^0.27.0"
   },
   "devDependencies": {
     "@types/next": "^8.0.1",
     "@types/react": "^16.4.16",
     "@types/react-dom": "^16.8.2",
+    "@types/yup": "^0.26.12",
     "prettier": "^1.16.4",
     "tslint": "^5.14.0",
     "tslint-config-prettier": "^1.18.0",

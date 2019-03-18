@@ -39,16 +39,27 @@ const ValidationSchemaExample = () => (
       validationSchema={SignupSchema}
       onSubmit={OnSubmit}
     >
-      {() => (
+      {({ setFieldValue }) => (
         <Form>
           <Field name="firstName">
             {({ field }: FieldProps) => (
               <div>
                 <label htmlFor="firstName">First Name</label>
                 <input {...field} id="firstName" />
+                {field.value && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFieldValue(field.name, "");
+                    }}
+                  >
+                    x
+                  </button>
+                )}
               </div>
             )}
           </Field>
+
           <ErrorMessage name="firstName" />
           <Field name="lastName">
             {({ field }: FieldProps) => (

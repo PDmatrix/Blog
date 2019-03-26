@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NSwag;
@@ -26,8 +27,9 @@ namespace Blog.API.Infrastructure
 				if (environment.IsEnvironment("Testing"))
 					opt.Filters.Add(typeof(AllowAnonymousFilter));
 				opt.Filters.Add(typeof(TransactionFilter));
-				opt.OutputFormatters.Add(new JsonOutputFormatter(new JsonSerializerSettings(), ArrayPool<char>.Shared));
+
 			});
+			builder.AddJsonFormatters();
 			builder.AddAuthorization();
 			builder.AddCors();
 			builder.AddFluentValidation(x =>

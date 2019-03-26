@@ -10,6 +10,8 @@ namespace Blog.API.MarkDig
 		{
 			_pipeline = new MarkdownPipelineBuilder()
 				.UseSoftlineBreakAsHardlineBreak()
+				.UseSmartyPants()
+				.DisableHtml()
 				.ConfigureNewLine(string.Empty)
 				.UseAdvancedExtensions()
 				.Build();
